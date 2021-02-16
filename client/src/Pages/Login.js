@@ -6,6 +6,7 @@ import { localSave } from "../functions/localStorage";
 
 import Navi from '../Components/Navbar';
 import Foot from '../Components/Footer';
+import { Redirect } from "react-router-dom";
 
 const Login = ({ setAuth }) => {
   const [inputs, setInputs] = useState({
@@ -24,16 +25,18 @@ const Login = ({ setAuth }) => {
     try {
       const body = { email, pass };
       await axios
-        .post("http://localhost:5000/login", body, {
+        .post("http://localhost:5000/auth/login", body, {
           headers: { "Content-type": "application/json" },
         })
         .then((res) => {
-          const parseRes = res.json();
+          const parseRes = res.data;
 
           if (parseRes.jwtToken) {
             localSave("token", parseRes.jwtToken);
+            localSave('user_id', parseRes.user_id);
             setAuth(true);
             toast.success("Logged in Succesfully");
+            <Redirect to="/dashboard"/>
           } else {
             setAuth(false);
             toast.error(parseRes);

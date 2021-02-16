@@ -24,14 +24,16 @@ const Signup = ({ setAuth }) => {
     e.preventDefault();
     try {
       const body = { email, pass, name };
-      await axios.post('http://localhost:5000/signup', body, { headers: { "Content-type": "application/json" } })
+      await axios.post('http://localhost:5000/auth/signup', body, { headers: { "Content-type": "application/json" } })
         .then(async res => {
-          const parseRes = await res.json();
+          const parseRes = await res.data;
 
           if (parseRes.jwtToken) {
             localSave('token', parseRes.jwtToken);
+            localSave('user_id', parseRes.user_id);
             setAuth(true);
             toast.success('Register Succesfully');
+            sendEmail();
           } else {
             setAuth(false);
             toast.error(parseRes);
@@ -39,6 +41,20 @@ const Signup = ({ setAuth }) => {
         });
     } catch (err) {
       console.error(err.message);
+    }
+  };
+
+  const sendEmail = async () => {
+    try {
+      const body = {
+        to: email,
+        subject: 'Bienvenido',
+        message: 'Hello',
+        name
+      };
+      await axios.post('http://localhost:5000/send',body);
+    } catch (err) {
+      console.error(err);
     }
   }
 

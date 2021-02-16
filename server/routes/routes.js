@@ -411,31 +411,35 @@ router.post('/send', (req,res) => {
 // Tasks
 
 router.post('/task', authorize, async (req,res) => {
-    const tasks = await Task.find();
+    const { user_id } = req.body;
+    const tasks = await Task.find({'user_id': user_id});
     res.json(tasks);
 });
 
 router.post('/task/add',authorize, upload.single('img'), async(req,res) =>{
-    const { img, name, priority, ven_date } = req.body;
-
+    const { name, priority, ven_date, user_id } = req.body;
+    const img = '';
     const newTaskData = {
         name,
         img,
         priority,
-        ven_date
+        ven_date,
+        user_id
     };
 
     const newTask = new Task(newTaskData);
 
     newTask.save()
     .then(() => res.json('User Added'))
-    .catch(err => res.status(400).json(`Error: ${err}`));
+    .catch(err => {res.status(400).json(`Error: ${err}`); console.log(err);});
 });
 
 router.post('/task/edit/:id',authorize, async (req,res) => {
     const { name, priority, ven_date } = req.body;
     const { img } = await Task.findById(req.params.id);
-    const task = new Task({name,img,priority,ven_date});
+
+    const task = new Task.findByIdAndUpdate(req.params.id,{name,img,priority,ven_date});
+    //const task = new Task({name,img,priority,ven_date});
     await task.save();
     res.json({status: 'Task Saved'});
 })

@@ -4,6 +4,7 @@ import axios from "axios";
 import { Modal, ModalBody, ModalFooter, ModalHeader }  from 'reactstrap'
 
 import Navi from '../Components/NavbarLogged';
+import Foot from '../Components/Footer'
 
 import { localGet } from "../functions/localStorage";
 
@@ -16,7 +17,8 @@ const Dashboard = ({ setAuth }) => {
     name: '',
     img: '',
     priority: '',
-    ven_date: ''
+    ven_date: '',
+    user_id: localGet('user_id')
   })
 
   useEffect(() => {
@@ -29,8 +31,9 @@ const Dashboard = ({ setAuth }) => {
 
   const getTasks = async () => {
     try {
+      const user_id = localGet('user_id');
       await axios
-        .post("http://localhost:5000/task", null, {
+        .post("http://localhost:5000/task", {user_id: user_id}, {
           headers: { jwt_token: localGet("token") },
         })
         .then((res) => {
@@ -49,8 +52,8 @@ const Dashboard = ({ setAuth }) => {
   };
 
   const handleChange = async (e) => {
-    await setNewTask({ ...tasks, [e.target.name]: e.target.value });
-    console.log(tasks);
+    await setNewTask({ ...newTask, [e.target.name]: e.target.value });
+    console.log({newTask});
   };
 
   const handlePhoto = async (e) => {
@@ -64,11 +67,12 @@ const Dashboard = ({ setAuth }) => {
       img: newTask.img,
       priority: newTask.priority,
       ven_date: newTask.ven_date,
+      user_id: localGet('user_id')
     };
 
     await axios
       .post("http://localhost:5000/task/add", formData, {
-        headers: { jwt_token: localGet("token") },
+        headers: { jwt_token: localGet("token")},
       })
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
@@ -224,6 +228,7 @@ const Dashboard = ({ setAuth }) => {
             </ModalFooter>
           </Modal>
     </div>
+    <Foot />
     </div>
     
   );

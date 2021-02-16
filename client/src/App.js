@@ -1,4 +1,4 @@
-import React, {useEffect,useState} from 'react';
+import React, {useEffect,useState, Fragment} from 'react';
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -12,9 +12,6 @@ import Login from './Pages/Login';
 import Dashboard from './Pages/Dashboard';
 import Signup from './Pages/Signup';
 
-import Navi from './Components/Navbar';
-import Foot from './Components/Footer';
-
 import {localGet} from './functions/localStorage';
 
 toast.configure();
@@ -24,8 +21,8 @@ function App() {
         try {
             await axios.post("http://localhost:5000/auth/verify",null,{headers: { jwt_token: localGet('token')}})
             .then(async res => {
-                const parseRes = await res.json();
-
+                const parseRes = await res.data;
+                console.log(res);
                 parseRes === true ? setIsAuthenticated(true) : setIsAuthenticated(false);
                 console.log('OK');
             });
@@ -45,15 +42,15 @@ function App() {
     };
 
     return (
-        <div>
+        <Fragment>
             <Router>
                 <Switch>
                     <Route exact path="/login" render={props => !isAuthenticated ? (<Login {...props} setAuth={setAuth} />) : (<Redirect to="/dashboard" />)} />
-                    <Route exact path="/signup" render={props => !isAuthenticated ? (<Signup {...props} setAuth={setAuth} />) : (<Redirect to="/dashboard" />)} />
+                    <Route exact path="/" render={props => !isAuthenticated ? (<Signup {...props} setAuth={setAuth} />) : (<Redirect to="/dashboard" />)} />
                     <Route exact path="/dashboard" render={props => isAuthenticated ? (<Dashboard {...props} setAuth={setAuth} />) : (<Redirect to="/login" />)} />
                 </Switch>
             </Router>
-        </div>
+        </Fragment>
     )
 }
 

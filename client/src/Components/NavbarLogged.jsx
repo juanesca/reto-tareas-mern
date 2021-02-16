@@ -14,11 +14,10 @@ const NavbarLogged = ({ setAuth }) => {
           headers: { jwt_token: localGet("token") },
         })
         .then(async (res) => {
-          const parseData = await res.json();
-          setName(parseData.user_name);
+          setName(res.data.name);
         });
     } catch (err) {
-      console.error(err.message);
+      console.error(err);
     }
   };
 
@@ -26,6 +25,7 @@ const NavbarLogged = ({ setAuth }) => {
     e.preventDefault();
     try {
       localRemove('token');
+      localRemove('user_id');
       setAuth(false);
       toast.success("Logout successfully");
     } catch (err) {

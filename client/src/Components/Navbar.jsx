@@ -18,7 +18,7 @@ export default class Navigation extends Component {
                                 <Link to="/login" className="nav-link">Log in</Link>
                             </li>
                             <li className="nav-item">
-                                <Link to="/signup" className="nav-link">Sign up</Link>
+                                <Link to="/" className="nav-link">Sign up</Link>
                             </li>
                         </ul>
                     </div>

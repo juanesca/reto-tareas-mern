@@ -7,7 +7,7 @@ const taskSchema = new Schema({
         trim: true
     },
     img: {
-        type: String
+        type: Buffer
     },
     priority: {
         type: Number
