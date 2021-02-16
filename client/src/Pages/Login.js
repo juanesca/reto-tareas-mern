@@ -4,6 +4,9 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { localSave } from "../functions/localStorage";
 
+import Navi from '../Components/Navbar';
+import Foot from '../Components/Footer';
+
 const Login = ({ setAuth }) => {
   const [inputs, setInputs] = useState({
     email: "",
@@ -42,7 +45,9 @@ const Login = ({ setAuth }) => {
   };
   return (
     <div>
-      <form onSubmit={onSubmitFrom}>
+      <Navi />
+      <div className="container-fluid">
+        <form onSubmit={onSubmitFrom}>
         <div className="form-group row">
           <label htmlFor="email" className="col-sm-2 col-form-label">
             Email
@@ -75,6 +80,10 @@ const Login = ({ setAuth }) => {
         </div>
         <button className='btn btn-success btn-block' >Log in</button>
       </form>
+      </div>
+      
+
+      <Foot/>
     </div>
   );
 };

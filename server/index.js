@@ -2,11 +2,14 @@ const cors = require('cors');
 const express = require('express');
 const morgan = require('morgan')
 
+require('dotenv').config();
 
 const app = express();
 
+const { mongoose } = require('./db');
 
-app.set('port', process.env.PORT || 5000);
+
+app.set('port', process.env.PORT);
 
 
 //Middlewares

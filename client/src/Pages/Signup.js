@@ -4,6 +4,9 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { localSave } from '../functions/localStorage';
 
+import Navi from '../Components/Navbar';
+import Foot from '../Components/Footer';
+
 const Signup = ({ setAuth }) => {
   const [inputs, setInputs] = useState({
     email: '',
@@ -22,7 +25,7 @@ const Signup = ({ setAuth }) => {
     try {
       const body = { email, pass, name };
       await axios.post('http://localhost:5000/signup', body, { headers: { "Content-type": "application/json" } })
-        .then(res => {
+        .then(async res => {
           const parseRes = await res.json();
 
           if (parseRes.jwtToken) {
@@ -41,7 +44,9 @@ const Signup = ({ setAuth }) => {
 
   return (
     <div>
-      <form onSubmit={onSubmitForm} >
+      <Navi />
+      <div className="container-fluid" >
+        <form onSubmit={onSubmitForm} >
         <div className="form-group row">
           <label htmlFor="email" className="col-sm-2 col-form-label">Email</label>
           <div className="col-sm-10">
@@ -81,8 +86,11 @@ const Signup = ({ setAuth }) => {
             />
           </div>
         </div>
-        <button class="btn btn-primary" type="submit">Registrarme</button>
+        <button className="btn btn-primary" type="submit">Registrarme</button>
       </form>
+      </div>
+      
+      <Foot/>
     </div>
   )
 }

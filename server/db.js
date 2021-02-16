@@ -26,15 +26,23 @@ module.exports = async () => {
 });
 }
 */
-const uri = "mongodb+srv://juan:hSt940tEC5dQyjEM@reto-tareas.v2lfs.mongodb.net/tareas?retryWrites=true&w=majority";
+require('dotenv').config();
+
+const uri = process.env.uri;
 
 const mongoose = require('mongoose');
 
-mongoose.connect(uri, {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true});
+mongoose.connect(uri, {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true})
+.then(db => console.log('Db is connected'))
+.catch(err => console.error(err));
 
+module.exports = mongoose;
+
+
+/*
 const connection = mongoose.connection;
 connection.once('open', () => {
     console.log('mongo DB success');
-});
+});*/
 
 

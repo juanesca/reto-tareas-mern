@@ -13,7 +13,7 @@ const taskSchema = new Schema({
         type: Number
     },
     ven_date: {
-        type: String
+        type: Date
     },
     user_id: {
         type: String,

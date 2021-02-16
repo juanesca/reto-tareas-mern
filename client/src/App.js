@@ -2,7 +2,7 @@ import React, {useEffect,useState} from 'react';
 
 import 'react-toastify/dist/ReactToastify.css';
 
-import { BrowserRouter,Route,Switch,Redirect, Router} from 'react-router-dom';
+import { BrowserRouter as Router,Route,Switch,Redirect} from 'react-router-dom';
 
 import { toast } from 'react-toastify';
 
@@ -12,6 +12,9 @@ import Login from './Pages/Login';
 import Dashboard from './Pages/Dashboard';
 import Signup from './Pages/Signup';
 
+import Navi from './Components/Navbar';
+import Foot from './Components/Footer';
+
 import {localGet} from './functions/localStorage';
 
 toast.configure();
@@ -19,11 +22,12 @@ toast.configure();
 function App() {
     const checkAuthenticated = async () => {
         try {
-            axios.post("http://localhost:5000/auth/verify",null,{headers: { jwt_token: localGet('token')}})
-            .then(res => {
+            await axios.post("http://localhost:5000/auth/verify",null,{headers: { jwt_token: localGet('token')}})
+            .then(async res => {
                 const parseRes = await res.json();
 
                 parseRes === true ? setIsAuthenticated(true) : setIsAuthenticated(false);
+                console.log('OK');
             });
         } catch (err) {
             console.error(err.message);
