@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { localSave } from '../functions/localStorage';
@@ -29,14 +28,14 @@ const Signup = ({ setAuth }) => {
           const parseRes = await res.data;
 
           if (parseRes.jwtToken) {
+            sendEmail();
             localSave('token', parseRes.jwtToken);
             localSave('user_id', parseRes.user_id);
             setAuth(true);
             toast.success('Register Succesfully');
-            sendEmail();
           } else {
             setAuth(false);
-            toast.error(parseRes);
+            toast.error(parseRes.msg);
           }
         });
     } catch (err) {
@@ -46,13 +45,7 @@ const Signup = ({ setAuth }) => {
 
   const sendEmail = async () => {
     try {
-      const body = {
-        to: email,
-        subject: 'Bienvenido',
-        message: 'Hello',
-        name
-      };
-      await axios.post('http://localhost:5000/send',body);
+      await axios.post('http://localhost:5000/send',{email, subject: 'Bienvenido', name});
     } catch (err) {
       console.error(err);
     }

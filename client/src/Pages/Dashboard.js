@@ -3,10 +3,13 @@ import axios from "axios";
 
 import { Modal, ModalBody, ModalFooter, ModalHeader }  from 'reactstrap'
 
-import Navi from '../Components/NavbarLogged';
-import Foot from '../Components/Footer'
+import { Link } from 'react-router-dom';
 
-import { localGet } from "../functions/localStorage";
+import Foot from '../Components/Footer';
+
+import { localGet, localRemove } from "../functions/localStorage";
+
+import { toast } from 'react-toastify';
 
 const Dashboard = ({ setAuth }) => {
   const [tasks, setTasks] = useState([]);
@@ -20,13 +23,31 @@ const Dashboard = ({ setAuth }) => {
     ven_date: '',
     user_id: localGet('user_id')
   })
+  const [userName, setUserName] = useState("");
+  const [deleteTaskID, setDeleteTaskID] = useState('');
+  const [editTaskID, setEditTaskID] = useState('');
 
   useEffect(() => {
+    getProfile();
     getTasks();
   }, []);
 
   const modalIns = () => {
     setModalInsertar(!modalInsertar);
+  };
+
+  const getProfile = async () => {
+    try {
+      await axios
+        .post("http://localhost:5000/user", null, {
+          headers: { jwt_token: localGet("token") },
+        })
+        .then(async (res) => {
+          setUserName(res.data);
+        });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const getTasks = async () => {
@@ -37,6 +58,7 @@ const Dashboard = ({ setAuth }) => {
           headers: { jwt_token: localGet("token") },
         })
         .then((res) => {
+          console.log(res.data);
           setTasks(res.data);
         });
     } catch (err) {
@@ -74,7 +96,7 @@ const Dashboard = ({ setAuth }) => {
       .post("http://localhost:5000/task/add", formData, {
         headers: { jwt_token: localGet("token")},
       })
-      .then((res) => console.log(res))
+      .then((res) => {console.log(res); modalIns(); getTasks()})
       .catch((err) => console.log(err));
   };
 
@@ -106,27 +128,72 @@ const Dashboard = ({ setAuth }) => {
     })
   }
 
+  const logout = async (e) => {
+    e.preventDefault();
+    try {
+      localRemove('token');
+      localRemove('user_id');
+      setAuth(false);
+      toast.success("Logout successfully");
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
   return (
     <div>
-      <Navi setAuth={setAuth} />
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark p-3">
+      <div className="container">
+        <Link className="navbar-brand" to="/dashboard">
+          TasksApp
+        </Link>
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav ml-auto nav-pills">
+            <li className="nav-item nav-white">{ userName }</li>
+            {'   '}
+            <li className="nav-item btn btn-white" onClick={e => logout(e)} >Log out</li>
+          </ul>
+        </div>
+      </div>
+    </nav>
       <div className="container-fluid">
       <br/><br/><br/>
-      <button className="btn btn-succes" onClick={() =>{ setNewTask(null); setTipoModal('insertar'); modalIns()}} >Agregar tarea</button>
+      <button className="btn btn-success" onClick={() =>{ setNewTask(null); setTipoModal('insertar'); modalIns()}} >Agregar tarea</button>
       <br/><br/>
       <div className="d-flex flex-wrap align-content-around justify-content-center">
         {tasks.map((task) => (
           <div key={task._id} className="col mb-4">
-            <div className="card" style="width: 18rem;">
+            <div className="card" style={{width: '18rem'}}>
               <img src={task.img} className="card-img-top" alt="..." />
               <div className="card-body">
-                <h5 className="card-title">{task.name}</h5>
-                <p className="card-text">{task.priority}</p>
-                <p className="card-text">{task.ven_date}</p>
+                <div className="row">
+                  <label className="col-sm-2" ></label>
+                  <h5 className="card-title">{task.name}</h5>
+                </div>
+                <div className="row">
+                <label className="col-sm-2" ></label>
+                  <p className="card-text">{task.priority}</p>
+                </div>
+                <div className="row">
+                <label className="col-sm-2" ></label>
+                  <p className="card-text">{task.ven_date}</p>
+                </div>
               </div>
               <div className="card-body">
-                <button className="btn btn-primary" onClick={() => {selectTask(task); modalIns()}} >Editar</button>
+                <button className="btn btn-primary" onClick={() => {selectTask(task); modalIns(); setEditTaskID(task._id)}} >Editar</button>
                 
-                <button className="btn btn-danger" onClick={() => {selectTask(task); setModalEliminar(true)}} >Eliminar</button>
+                <button className="btn btn-danger" onClick={() => {setDeleteTaskID(task._id); setModalEliminar(true)}} >Eliminar</button>
               </div>
             </div>
           </div>
@@ -196,21 +263,21 @@ const Dashboard = ({ setAuth }) => {
             value={newTask?newTask.priority: ''}
           >
             <option selected>Choose...</option>
-            <option value="3">Alta</option>
-            <option value="2">Media</option>
-            <option value="1">Baja</option>
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
           </select>
         </div>
       </div>
           </ModalBody>
           <ModalFooter>
             {tipoModal === 'insertar' ? 
-            <button className="btn btn-success" onClick={(e) => postTask(e)} >
+            (<button className="btn btn-success" onClick={(e) => postTask(e)} >
               OK
-            </button> :
-            <button className="btn btn-success" onClick={() => putTask()} >
+            </button>) :
+            (<button className="btn btn-success" onClick={() => putTask(editTaskID)} >
             OK
-          </button>
+          </button>)
           }
             
             <button className="btn btn-danger" onClick={() => modalIns()} >
@@ -223,7 +290,7 @@ const Dashboard = ({ setAuth }) => {
                Estás seguro que deseas eliminar esta tarea ?
             </ModalBody>
             <ModalFooter>
-              <button className="btn btn-danger" onClick={()=> deleteTask()} >Sí</button>
+              <button className="btn btn-danger" onClick={()=> {deleteTask(deleteTaskID); setDeleteTaskID(null); setModalEliminar(false) }} >Sí</button>
               <button className="btn btn-secundary" onClick={()=> setModalEliminar(false)}>No</button>
             </ModalFooter>
           </Modal>

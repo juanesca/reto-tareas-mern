@@ -14,14 +14,14 @@ const User = require('../models/user.model');
 
 const { encryptPassword, matchPassword} = require('../utils/helpers');
 
-let transporter = nodemailer.createTransport(smtpTransport({
+let transporter = nodemailer.createTransport({
     service: 'gmail',
     host: 'smtp.gmail.com',
     auth: {
-        user: process.env.user,
-        pass: process.env.pass
+        user: process.env.USER,
+        pass: process.env.PASS
     }
-}));
+});
 
 const storage = multer.diskStorage({
     destination: function(req,file,cb){
@@ -46,8 +46,12 @@ let upload = multer({storage, fileFilter});
 //node mailer
 
 router.post('/send', (req,res) => {
-    let {to,subject,message,name} = req.body;
-
+    let {email,subject,name} = req.body;
+/*
+    var to = req.body.to,
+    subject = req.body.subject,
+    name = req.body.name;
+    */
     contentHTML = `<!DOCTYPE html>
     <html lang="en">
       <head>
@@ -391,17 +395,17 @@ router.post('/send', (req,res) => {
 
   const mailOptions = {
       from: 'Tasks App',
-      to: to,
+      to: email,
       subject: subject,
-      html: message
+      html: contentHTML
   };
 
   transporter.sendMail(mailOptions, (error, info) =>{
     if (error) {
-        console.log(error);
+      res.status(406).json({state:0, message:error});
     } else {
         console.log(`sent: ${info.message}`);
-        res.json({message: 'Correo enviado'})
+        res.json({state:1, message:'Correo enviado'})
     }
   })
 })
@@ -438,9 +442,8 @@ router.post('/task/edit/:id',authorize, async (req,res) => {
     const { name, priority, ven_date } = req.body;
     const { img } = await Task.findById(req.params.id);
 
-    const task = new Task.findByIdAndUpdate(req.params.id,{name,img,priority,ven_date});
+    await Task.findByIdAndUpdate(req.params.id,{name,img,priority,ven_date});
     //const task = new Task({name,img,priority,ven_date});
-    await task.save();
     res.json({status: 'Task Saved'});
 })
 
@@ -454,7 +457,7 @@ router.post('/task/delete/:id', authorize, async (req,res) => {
 router.post('/user',authorize, async (req,res) => {
     try {
         const user = await User.findById(req.user.id);
-        res.json(user)
+        res.json(user.name);
     } catch (err) {
         console.log(err.message);
     }
@@ -468,7 +471,7 @@ router.post('/auth/signup',async (req,res) => {
         const user = await User.find({"email": email});
 
         if (user.length > 0) {
-            return res.status(401).json("User already exist!");
+            return res.status(401).json({ msg: 'user already exists!'});
         }
 
         const password = await encryptPassword(pass);

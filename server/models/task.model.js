@@ -10,7 +10,7 @@ const taskSchema = new Schema({
         type: Buffer
     },
     priority: {
-        type: Number
+        type: String
     },
     ven_date: {
         type: Date

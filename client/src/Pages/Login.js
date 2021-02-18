@@ -4,8 +4,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { localSave } from "../functions/localStorage";
 
-import Navi from '../Components/Navbar';
-import Foot from '../Components/Footer';
+import Navi from "../Components/Navbar";
+import Foot from "../Components/Footer";
 import { Redirect } from "react-router-dom";
 
 const Login = ({ setAuth }) => {
@@ -33,10 +33,10 @@ const Login = ({ setAuth }) => {
 
           if (parseRes.jwtToken) {
             localSave("token", parseRes.jwtToken);
-            localSave('user_id', parseRes.user_id);
+            localSave("user_id", parseRes.user_id);
             setAuth(true);
             toast.success("Logged in Succesfully");
-            <Redirect to="/dashboard"/>
+            <Redirect to="/dashboard" />;
           } else {
             setAuth(false);
             toast.error(parseRes);
@@ -49,44 +49,50 @@ const Login = ({ setAuth }) => {
   return (
     <div>
       <Navi />
-      <div className="container-fluid">
-        <form onSubmit={onSubmitFrom}>
-        <div className="form-group row">
-          <label htmlFor="email" className="col-sm-2 col-form-label">
-            Email
-          </label>
-          <div className="col-sm-10">
-            <input 
-            type="email" 
-            className="form-control" 
-            id="email" 
-            name='email'
-            value={email}
-            onChange={e => onChange(e)}
-            />
-          </div>
+      <div className="container-fluid d-flex justify-content-center" style={{paddingTop: '10vh'}}>
+        <div className="card" style={{ width: "35rem", height: "30rem" }}>
+          <div className="card-header" style={{textAlign: 'center'}}>Log In</div>
+          <form onSubmit={onSubmitFrom} className="h-100" style={{paddingBottom: '0px'}}>
+            <div className="card-body" style={{height: '80%'}}>
+              <div className="form-group row">
+                <label htmlFor="email" className="col-sm-2 col-form-label">
+                  Email
+                </label>
+                <div className="col-sm-10">
+                  <input
+                    type="email"
+                    className="form-control"
+                    id="email"
+                    name="email"
+                    value={email}
+                    onChange={(e) => onChange(e)}
+                  />
+                </div>
+              </div>
+              <div className="form-group row">
+                <label htmlFor="pass" className="col-sm-2 col-form-label">
+                  Contraseña
+                </label>
+                <div className="col-sm-10">
+                  <input
+                    type="password"
+                    className="form-control"
+                    id="pass"
+                    name="pass"
+                    value={pass}
+                    onChange={(e) => onChange(e)}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="card-footer" style={{marginBottom: '0px'}}>
+              <button className="btn btn-success btn-block">OK</button>
+            </div>
+          </form>
         </div>
-        <div className="form-group row">
-          <label htmlFor="pass" className="col-sm-2 col-form-label">
-            Contraseña
-          </label>
-          <div className="col-sm-10">
-            <input 
-            type="password" 
-            className="form-control" 
-            id="pass"
-            name="pass"
-            value={pass}
-            onChange={e => onChange(e)}
-            />
-          </div>
-        </div>
-        <button className='btn btn-success btn-block' >Log in</button>
-      </form>
       </div>
-      
 
-      <Foot/>
+      <Foot />
     </div>
   );
 };
