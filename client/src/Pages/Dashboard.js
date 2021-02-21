@@ -32,6 +32,11 @@ const Dashboard = ({ setAuth }) => {
     getTasks();
   }, []);
 
+  const formatVenDate= (date) => {
+    const d = date.split('T');
+    return d[0];
+  }
+
   const modalIns = () => {
     setModalInsertar(!modalInsertar);
   };
@@ -192,7 +197,7 @@ const Dashboard = ({ setAuth }) => {
                 </div>
                 <div className="row">
                 <label className="col-sm-2" ></label>
-                  <p className="card-text">{task.ven_date}</p>
+                  <p className="card-text">{() => formatVenDate(task.ven_date)}</p>
                 </div>
               </div>
               <div className="card-body">

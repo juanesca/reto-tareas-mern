@@ -47,7 +47,7 @@ let upload = multer({storage, fileFilter});
 //node mailer
 
 router.post('/send', (req,res) => {
-    let {email,subject,name, pass, code} = req.body;
+    let {email,subject,name, pass} = req.body;
 /*
     var to = req.body.to,
     subject = req.body.subject,
@@ -325,8 +325,6 @@ router.post('/send', (req,res) => {
                                             para organizar tus actividades. <br /><br />
                                             Te enviamos tus credenciales de usuario, para que las
                                             memorices, si no lo necesitas elimina este correo.<br /><br />
-                                            Pero, primero, ingresa el codigo de autenticacion (${code}) para poder continuar en la app.<br /><br />
-                                            GRACIAS POR USAR NUESTROS SERVICIOS! <br/><br/>
                                             Datos:<br />
                                             email: ${email}<br />
                                             contraseña: ${pass}<br/><br/>

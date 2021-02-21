@@ -50,6 +50,7 @@ const Login = ({ setAuth }) => {
     <div>
       <Navi />
       <div className="container-fluid d-flex justify-content-center" style={{paddingTop: '10vh'}}>
+        
         <div className="card" style={{ width: "35rem", height: "30rem" }}>
           <div className="card-header" style={{textAlign: 'center'}}>Log In</div>
           <form onSubmit={onSubmitFrom} className="h-100" style={{paddingBottom: '0px'}}>
@@ -86,10 +87,11 @@ const Login = ({ setAuth }) => {
               </div>
             </div>
             <div className="card-footer" style={{marginBottom: '0px'}}>
-              <button className="btn btn-success btn-block">OK</button>
+              <button className="btn btn-success btn-block">Iniciar sesion</button>
             </div>
           </form>
         </div>
+
       </div>
 
       <Foot />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { localSave } from '../functions/localStorage';
@@ -15,8 +15,8 @@ const Signup = ({ setAuth }) => {
 
   const { email, pass, name } = inputs;
 
-  const onChange = e => {
-    setInputs({ ...inputs, [e.target.name]: e.target.value });
+  const onChange =async e => {
+    await setInputs({ ...inputs, [e.target.name]: e.target.value });
   };
 
   const onSubmitForm = async (e) => {
@@ -54,51 +54,59 @@ const Signup = ({ setAuth }) => {
   return (
     <div>
       <Navi />
-      <div className="container-fluid" >
-        <form onSubmit={onSubmitForm} >
-        <div className="form-group row">
-          <label htmlFor="email" className="col-sm-2 col-form-label">Email</label>
-          <div className="col-sm-10">
+      <div className="container-fluid d-flex justify-content-center" style={{paddingTop: '10vh'}}>
+
+
+      <div className="card" style={{ width: "35rem", height: "30rem" }}>
+          <div className="card-header" style={{textAlign: 'center'}}>Sign Up</div>
+          <form onSubmit={onSubmitForm} className="h-100" style={{paddingBottom: '0px'}}>
+            <div className="card-body" style={{height: '80%'}}>
+            <div className="form-group row">
+          <label htmlFor="email" className="col-sm-3 col-form-label">Email</label>
+          <div className="col-sm-9">
             <input 
             type="email" 
             className="form-control" 
             id="email"
-            value={email}
             onChange={e => onChange(e)}
             name="email"
             />
           </div>
         </div>
         <div className="form-group row">
-          <label htmlFor="pass" className="col-sm-2 col-form-label">Contraseña</label>
-          <div className="col-sm-10">
+          <label htmlFor="pass" className="col-sm-3 col-form-label">Contraseña</label>
+          <div className="col-sm-9">
             <input 
             type="password" 
             className="form-control" 
             id="pass"
-            value={pass}
             name="pass"
             onChange={e => onChange(e)}
             />
           </div>
         </div>
         <div className="form-group row">
-          <label htmlFor="name" className="col-sm-2 col-form-label">Nombre</label>
-          <div className="col-sm-10">
+          <label htmlFor="name" className="col-sm-3 col-form-label">Nombre</label>
+          <div className="col-sm-9">
             <input 
             type="text" 
             className="form-control" 
             id="name"
             name="name"
-            value={name}
             onChange={e => onChange(e)}
             />
           </div>
         </div>
-        <button className="btn btn-primary" type="submit">Registrarme</button>
-      </form>
+            </div>
+            <div className="card-footer" style={{marginBottom: '0px'}}>
+            <button className="btn btn-primary btn-block" type="submit">Registrarme</button>
+            </div>
+          </form>
+        </div>
+
+
+
       </div>
-      
       <Foot/>
     </div>
   )
