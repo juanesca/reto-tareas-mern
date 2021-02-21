@@ -27,8 +27,8 @@ const Dashboard = ({ setAuth }) => {
   const [deleteTaskID, setDeleteTaskID] = useState('');
   const [editTaskID, setEditTaskID] = useState('');
 
-  useEffect(() => {
-    getProfile();
+  useEffect(async() => {
+    await getProfile();
     getTasks();
   }, []);
 
@@ -36,14 +36,19 @@ const Dashboard = ({ setAuth }) => {
     setModalInsertar(!modalInsertar);
   };
 
+  const u_name = (name) => {
+    setUserName(name);
+  }
+
   const getProfile = async () => {
     try {
       await axios
-        .post("http://localhost:5000/user", null, {
+        .post("http://localhost:5000/user", { id: localGet('user_id')}, {
           headers: { jwt_token: localGet("token") },
         })
         .then(async (res) => {
-          setUserName(res.data);
+          console.log(res.data[0]);
+          await u_name(res.data[0].name)
         });
     } catch (err) {
       console.error(err);
@@ -58,8 +63,8 @@ const Dashboard = ({ setAuth }) => {
           headers: { jwt_token: localGet("token") },
         })
         .then((res) => {
-          console.log(res.data);
           setTasks(res.data);
+          console.log(userName);
         });
     } catch (err) {
       console.error(err.message);
@@ -160,7 +165,7 @@ const Dashboard = ({ setAuth }) => {
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ml-auto nav-pills">
-            <li className="nav-item nav-white">{ userName }</li>
+            <li className="nav-item nav-white">{userName}</li>
             {'   '}
             <li className="nav-item btn btn-white" onClick={e => logout(e)} >Log out</li>
           </ul>

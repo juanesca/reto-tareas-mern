@@ -55,10 +55,10 @@ const Login = ({ setAuth }) => {
           <form onSubmit={onSubmitFrom} className="h-100" style={{paddingBottom: '0px'}}>
             <div className="card-body" style={{height: '80%'}}>
               <div className="form-group row">
-                <label htmlFor="email" className="col-sm-2 col-form-label">
+                <label htmlFor="email" className="col-sm-3 col-form-label">
                   Email
                 </label>
-                <div className="col-sm-10">
+                <div className="col-sm-9">
                   <input
                     type="email"
                     className="form-control"
@@ -70,10 +70,10 @@ const Login = ({ setAuth }) => {
                 </div>
               </div>
               <div className="form-group row">
-                <label htmlFor="pass" className="col-sm-2 col-form-label">
+                <label htmlFor="pass" className="col-sm-3 col-form-label">
                   Contraseña
                 </label>
-                <div className="col-sm-10">
+                <div className="col-sm-9">
                   <input
                     type="password"
                     className="form-control"

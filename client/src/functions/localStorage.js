@@ -1,4 +1,4 @@
-export const localSave = (key, value) => window.localStorage.setItem(key,value);
+export const localSave =  (key, value) => window.localStorage.setItem(key,value);
 
 export const localGet = (key) => window.localStorage.getItem(key);
 

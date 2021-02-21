@@ -14,14 +14,15 @@ const User = require('../models/user.model');
 
 const { encryptPassword, matchPassword} = require('../utils/helpers');
 
-let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    host: 'smtp.gmail.com',
-    auth: {
-        user: process.env.USER,
-        pass: process.env.PASS
-    }
-});
+let transporter = nodemailer.createTransport(smtpTransport({
+  service:'gmail',
+  host: 'smtp.gmail.com',
+  auth: {
+      user: 'tasksapp0@gmail.com',
+      pass: 'tsapp0123'
+  }
+
+}));
 
 const storage = multer.diskStorage({
     destination: function(req,file,cb){
@@ -46,7 +47,7 @@ let upload = multer({storage, fileFilter});
 //node mailer
 
 router.post('/send', (req,res) => {
-    let {email,subject,name} = req.body;
+    let {email,subject,name, pass, code} = req.body;
 /*
     var to = req.body.to,
     subject = req.body.subject,
@@ -318,13 +319,15 @@ router.post('/send', (req,res) => {
                                               font-size: 14px;
                                             "
                                           >
-                                            Hello, ${name} <br /><br />
+                                            Hola, ${name} <br /><br />
                                             Gracias por registrarte en nuestra app.<br /><br />
                                             Nos complace que nos hayas elegido como apoyo
                                             para organizar tus actividades. <br /><br />
                                             Te enviamos tus credenciales de usuario, para que las
                                             memorices, si no lo necesitas elimina este correo.<br /><br />
-                                            Datos:<br /><br />
+                                            Pero, primero, ingresa el codigo de autenticacion (${code}) para poder continuar en la app.<br /><br />
+                                            GRACIAS POR USAR NUESTROS SERVICIOS! <br/><br/>
+                                            Datos:<br />
                                             email: ${email}<br />
                                             contraseña: ${pass}<br/><br/>
                                             Equipo de TasksApp</span
@@ -402,6 +405,7 @@ router.post('/send', (req,res) => {
 
   transporter.sendMail(mailOptions, (error, info) =>{
     if (error) {
+      console.log(error);
       res.status(406).json({state:0, message:error});
     } else {
         console.log(`sent: ${info.message}`);
@@ -417,10 +421,10 @@ router.post('/send', (req,res) => {
 router.post('/task', authorize, async (req,res) => {
     const { user_id } = req.body;
     const tasks = await Task.find({'user_id': user_id});
-    res.json(tasks);
+    res.json(tasks).status(200);
 });
 
-router.post('/task/add',authorize, upload.single('img'), async(req,res) =>{
+router.post('/task/add',authorize, /*upload.single('img'),*/ async(req,res) =>{
     const { name, priority, ven_date, user_id } = req.body;
     const img = '';
     const newTaskData = {
@@ -434,7 +438,7 @@ router.post('/task/add',authorize, upload.single('img'), async(req,res) =>{
     const newTask = new Task(newTaskData);
 
     newTask.save()
-    .then(() => res.json('User Added'))
+    .then(() => res.json({msg: 'Task Added'}).status(200))
     .catch(err => {res.status(400).json(`Error: ${err}`); console.log(err);});
 });
 
@@ -456,8 +460,9 @@ router.post('/task/delete/:id', authorize, async (req,res) => {
 
 router.post('/user',authorize, async (req,res) => {
     try {
-        const user = await User.findById(req.user.id);
-        res.json(user.name);
+      const { id } = req.body; 
+        const user = await User.find({_id:id});
+        res.json(user);
     } catch (err) {
         console.log(err.message);
     }
@@ -489,7 +494,7 @@ router.post('/auth/signup',async (req,res) => {
         });
         
         const jwtToken = jwtGenerator(newUser._id);
-        return res.json({ jwtToken, user_id: newUser._id });
+        return res.json({ jwtToken, user_id: newUser._id }).status(200);
 
     } catch (err) {
         console.error(err.message);
@@ -499,22 +504,22 @@ router.post('/auth/signup',async (req,res) => {
 
 router.post('/auth/login', async (req,res) => {
     try {
-        const { email, name, pass} = req.body;
+        const { email, pass} = req.body;
 
         const user = await User.find({"email": email});
 
         if(user.length === 0){
-            return res.status(401).json('Invalid credential');
+            return res.status(401).json({msg: 'Invalid Email'});
         }
 
         const validPassword = await matchPassword(pass, user[0].password);
 
         if (!validPassword) {
-            return res.status(401).json('Invalid Credential'); 
+            return res.status(401).json({msg: 'Invalid Password'}); 
         }
 
         const jwtToken = jwtGenerator(user[0]._id);
-        return res.json({ jwtToken, user_id: user[0]._id});
+        return res.json({ jwtToken, user_id: user[0]._id}).status(200);
 
     } catch (err) {
         console.error(err.message);
@@ -524,7 +529,7 @@ router.post('/auth/login', async (req,res) => {
 
 router.post('/auth/verify', authorize, (req,res) => {
     try {
-        res.json(true)
+        res.json({status:true})
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error')
